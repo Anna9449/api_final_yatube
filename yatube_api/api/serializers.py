@@ -1,18 +1,7 @@
-import base64
 from rest_framework import serializers
-from django.core.files.base import ContentFile
+from rest_framework.validators import UniqueTogetherValidator
 
 from posts.models import Comment, Post, Group, Follow, User
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -20,7 +9,6 @@ class PostSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
-    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Post
@@ -49,6 +37,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         read_only=True,
+        default=serializers.CurrentUserDefault(),
         slug_field='username'
     )
     following = serializers.SlugRelatedField(
@@ -59,16 +48,17 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('user', 'following'),
+                message='Вы уже подписаны на пользователя!'
+            )
+        ]
 
-    def validate(self, data):
-        user = self.context['request'].user
-        following = data['following']
-        if following == user:
+    def validate_following(self, value):
+        if value == self.context['request'].user:
             raise serializers.ValidationError(
                 'Невозможно подписаться на самого себя!'
             )
-        if Follow.objects.filter(user=user, following=following):
-            raise serializers.ValidationError(
-                f'Вы уже подписаны на пользователя {following}!'
-            )
-        return data
+        return value
