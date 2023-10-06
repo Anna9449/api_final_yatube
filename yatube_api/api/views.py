@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CommentSerializer, FollowSerializer,
                           GroupSerializer, PostSerializer)
-from posts.models import Group, Post, User
+from posts.models import Group, Post
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -49,11 +49,8 @@ class FollowViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
     filter_backends = (filters.SearchFilter,)
     search_fields = ('following__username',)
 
-    def get_user(self):
-        return get_object_or_404(User, username=self.request.user)
-
     def get_queryset(self):
-        return self.get_user().follower
+        return self.request.user.follower
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
