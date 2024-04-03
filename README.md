@@ -8,10 +8,10 @@ Yatube API - это учебный проект социальной сети, �
 
 ### Технологии:
 
-- Python
-- Django
-- DRF
-- JWT + djoser
+[![name badge](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![name badge](https://img.shields.io/badge/Django-3776AB?logo=django&logoColor=white)](https://docs.djangoproject.com/en/4.2/releases/3.2/)
+[![name badge](https://img.shields.io/badge/Django_REST_framework-3776AB?logo=djangorestramework&logoColor=white)](https://www.django-rest-framework.org/)
+[![name badge](https://img.shields.io/badge/JWT-3776AB?logo=jsonwebtokens&logoColor=white)](https://jwt.io/introduction/)
 
 ### Как запустить проект:
 
@@ -70,5 +70,4 @@ python3 manage.py runserver
 http://127.0.0.1:8000/redoc/
 
 ### Автор
-
-Анна Пестова
+[![name badge](https://img.shields.io/badge/Anna_Pestova-3776AB?logo=github&logoColor=white)](https://github.com/Anna9449)
